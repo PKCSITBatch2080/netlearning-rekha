@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 class Coll
 {
     void Learn()
@@ -23,5 +25,16 @@ class Coll
         };
 
         // collections
+        List <int> agesList = [3,3,4,2];//int as a generic parameter
+        List<string> namesList = ["rekha","rama", "roshan"];//O(n),n=3
+
+        Dictionary<string , long> countryPopulation = new();
+        countryPopulation.Add("Nepal", 214343546);
+        countryPopulation.Add("India", 342534646);
+        countryPopulation.Add("America",1324234356);
+        countryPopulation.Add("London", 88977876754);
+
+        var p = countryPopulation["Nepal"];
+
     }
 }

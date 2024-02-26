@@ -1,16 +1,25 @@
 using System;
+using System.Linq;
 
 class Methods
 {
-    public void Greet(string greeting)
-    {
-        Console.WriteLine($"{greeting}, there!"); // String interpolation
-    }
+    public void Greet() => Console.WriteLine("Hey, there!");
+    public void Greet(string greeting) => Console.WriteLine($"{greeting}, there!");       // string interpolation
 
     public float CalculateBMI(float weightInKg, float heightInFt)
     {
-        var heightInM = heightInFt * 0.3048f; // Corrected the assignment operator and added the conversion factor
-        var bmi = weightInKg / (heightInM * heightInM); // Corrected the formula
-        return bmi; // Added return statement
+        var heightInM = heightInFt * 0.3048f;
+        var bmi = weightInKg / (heightInM * heightInM);
+        return bmi;
+    }
+
+    // Variable number of arguments
+    public double GetMax(params double[] numbers) => numbers.Max();
+
+    public (int, int) GetMinMax(params int[] numbers)
+    {
+        var smallest = numbers.Min();
+        var highest = numbers.Max();
+        return (smallest, highest);
     }
 }
