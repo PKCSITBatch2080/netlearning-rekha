@@ -2,6 +2,7 @@ using System;
 
 class Student
 {
+    
     // Default Constructor
     public Student()
     {
@@ -34,9 +35,10 @@ class Student
 
     public string Address {get; set; }      //Auto implemented property
     DateTime dob;
+   // read only property[ public DateTime Dob{get;}]
 
 
-    public void DisplayInfo() 
+    public virtual void DisplayInfo() 
     {
         Console.WriteLine($"Student Name: {name}");
         Console.WriteLine($"Student Roll Number: {rollNumber}");

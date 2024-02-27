@@ -23,6 +23,12 @@ Student rekha = new Student("Rekha Aryal", 123);
 
 rama.RollNumber = 22;      // Assined
 rekha.RollNumber = 223;    // Not Assigned
+//rama.Dob = DateTime.Now;
+CSStudent roshan = new("Roshan Aryal", 19 ,"Hospital management system");
+roshan.DisplayInfo();
+
+var Sapana = new CyberSecurityStudent("Sapana Shrestha", 11 , "HMS" , "RedHat");
+Sapana.DisplayInfo();
 
 
 
