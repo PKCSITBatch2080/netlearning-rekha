@@ -1,21 +1,34 @@
-﻿// Program.cs
-using System;
-
-class Program
+﻿﻿﻿class Program
 {
-    static void Main()
+    public static void Main()
     {
-        string filePath = "Assignment3\\Inflation.csv";
-
+        string filePath = @" C:\Users\User\Desktop\dotnet\netlearning-rekha\Assig-3\Inflation.csv";
         InflationAnalysis analysis = new InflationAnalysis();
-        analysis.ReadCsvData(filePath);
+        analysis.ReadInflationData(filePath);
 
-        // Example usage of the methods:
-        var inflationRatesFor2021 = analysis.FindInflationRatesForYear(2021);
-        var highestInflationNepal = analysis.FindYearWithHighestInflation("Nepal");
-        var top10RegionsHighestInflation = analysis.ListTopRegionsWithHighestInflation();
-        var top3SouthAsianCountries2020 = analysis.ListTopSouthAsianCountriesWithLowestInflationForYear(2020);
+        Console.WriteLine("Inflation rates for countries for the year 2021:");
+        var data = analysis.GetInflationRatesForYear(2021);
+        foreach (var inflation in data)
+        {
+            Console.WriteLine($"{inflation.RegionalMember}: {inflation.InflationRate}%");
+        }
 
-        // You can add code here to print or process the results.
+        Console.WriteLine("\nYear when Nepal has highest inflation:");
+        string countryName = "Nepal";
+        int yearWithHighestInflationForNepal = analysis.GetYearWithHighestInflationForCountry(countryName);
+        Console.WriteLine(yearWithHighestInflationForNepal);
+
+        Console.WriteLine("\nTop 10 regions (countries) where inflation is highest for all time:");
+        foreach (var inflation in analysis.GetTop10RegionsWithHighestInflation())
+        {
+            Console.WriteLine($"{inflation.RegionalMember}: {inflation.InflationRate}%");
+        }
+
+        Console.WriteLine("\nTop 3 South Asian countries with lowest inflation rate for year 2020:");
+        foreach (var inflation in analysis.GetTop3SouthAsianCountriesWithLowestInflationForYear(2020))
+        {
+            Console.WriteLine($"{inflation.RegionalMember}: {inflation.InflationRate}%");
+        }
+
     }
 }

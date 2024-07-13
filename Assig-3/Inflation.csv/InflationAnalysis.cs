@@ -1,99 +1,94 @@
-
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-
-public class InflationAnalysis
+using System.IO;
+class InflationAnalysis
 {
-    public List<Inflation> AsianPacificInflations { get; set; } = new List<Inflation>();
+    List<Inflation> AsianPacificInflation;
 
-    public void ReadCsvData(string filePath)
+    public InflationAnalysis()
     {
-       try
+        AsianPacificInflation = new List<Inflation>();
+    }
+
+    public void ReadInflationData(string filePath)
+    {
+        try
         {
-            var lines = File.ReadAllLines(filePath);
-
-            if (lines.Length < 2)
+            using (var reader = new StreamReader(filePath))
             {
-                Console.WriteLine("Error: The CSV file does not contain enough data.");
-                return;
-            }
+                reader.ReadLine(); // Skip the header line
 
-            // Skip the header row
-            for (int i = 1; i < lines.Length; i++)
-            {
-                var columns = lines[i].Split(',');
-
-                if (columns.Length == 6)
+                while (!reader.EndOfStream)
                 {
-                    var inflationData = new Inflation
+                    string line = reader.ReadLine();
+                    string[] values = line.Split(',');
+
+                    if (
+                        int.TryParse(values[1], out int year)
+                        && double.TryParse(values[2].Replace("%", ""), out double inflationRate)
+                    )
                     {
-                        RegionalMember = columns[0].Trim(),
-                        Year = int.Parse(columns[1]),
-                        InflationRate = double.Parse(columns[2]),
-                        UnitOfMeasurement = columns[3].Trim(),
-                        Subregion = columns[4].Trim(),
-                        CountryCode = columns[5].Trim()
-                    };
+                        Inflation inflationData = new Inflation
+                        {
+                            RegionalMember = values[0],
+                            Year = year,
+                            InflationRate = inflationRate,
+                            UnitOfMeasurement = values[3],
+                            Subregion = values[4],
+                            CountryCode = values[5]
+                        };
 
-                    AsianPacificInflations.Add(inflationData);
-                }
-                else
-                {
-                    Console.WriteLine($"Error: Invalid data format in line {i + 1}. Skipping this line.");
+                        AsianPacificInflation.Add(inflationData);
+                    }
+                    else
+                    {
+                        Console.WriteLine(
+                            $"Error parsing data in line: {line}. Skipping this line."
+                        );
+                    }
                 }
             }
-
-            Console.WriteLine("Data loaded successfully.");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error reading CSV data: {ex.Message}");
+            Console.WriteLine($"An error occurred while reading the CSV file: {ex.Message}");
         }
     }
-    
 
-    public List<Inflation> FindInflationRatesForYear(int year)
+    public List<Inflation> GetInflationRatesForYear(int year)
     {
-        return AsianPacificInflations.Where(i => i.Year == year).ToList();
+        return AsianPacificInflation.Where(inflation => inflation.Year == year).ToList();
     }
 
-    public Inflation FindYearWithHighestInflation(string country)
+    public int GetYearWithHighestInflationForCountry(string countryName)
     {
-        return AsianPacificInflations.Where(i => i.RegionalMember == country)
-                                      .OrderByDescending(i => i.InflationRate)
-                                      .FirstOrDefault();
+        return AsianPacificInflation
+            .Where(inflation => inflation.RegionalMember == countryName)
+            .OrderByDescending(inflation => inflation.InflationRate)
+            .Select(inflation => inflation.Year)
+            .FirstOrDefault();
     }
-    public List<string> ListTopRegionsWithHighestInflation()
-        {
-         var topRegions = AsianPacificInflations.GroupBy(i => i.RegionalMember)
-                                           .Select(g => new
-                                           {
-                                               Region = g.Key,
-                                               MaxInflation = g.Max(i => (double?)i.InflationRate)
-                                           })
-                                           .Where(g => g.MaxInflation.HasValue)
-                                           .OrderByDescending(g => g.MaxInflation)
-                                           .Take(10)
-                                           .Select(g => g.Region)
-                                           .ToList();
 
-         return topRegions;
-        }
-
-    
-
-    public List<string> ListTopSouthAsianCountriesWithLowestInflationForYear(int year)
+    public List<Inflation> GetTop10RegionsWithHighestInflation()
     {
-        var southAsianCountries = AsianPacificInflations
-            .Where(i => i.Subregion == "South Asia" && i.Year == year)
-            .OrderBy(i => i.InflationRate)
-            .Take(3)
-            .Select(i => i.CountryCode)
+        return AsianPacificInflation
+            .Where(inflation => !string.IsNullOrEmpty(inflation.CountryCode))
+            .GroupBy(inflation => inflation.RegionalMember)
+            .Select(group => new Inflation
+            {
+                RegionalMember = group.Key,
+                InflationRate = group.Average(inflation => inflation.InflationRate)
+            })
+            .OrderByDescending(inflation => inflation.InflationRate)
+            .Take(10)
             .ToList();
+    }
 
-        return southAsianCountries;
+    public List<Inflation> GetTop3SouthAsianCountriesWithLowestInflationForYear(int year)
+    {
+        return AsianPacificInflation
+            .Where(inflation => inflation.Year == year && inflation.Subregion == "South Asia")
+            .OrderBy(inflation => inflation.InflationRate)
+            .Take(3)
+            .ToList();
     }
 }
-
